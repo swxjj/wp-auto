@@ -1,0 +1,27 @@
+{
+  "name": "wp-auto",
+  "version": "1.0.0",
+  "description": "Automatización biweekly de solicitudes de precios via WhatsApp y Gmail",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "send": "node src/index.js send",
+    "check": "node src/index.js check",
+    "followup": "node src/index.js followup",
+    "report": "node src/index.js report",
+    "test-dry": "node src/index.js test",
+    "scheduler": "node src/scheduler.js",
+    "setup-gmail": "node src/gmail-setup.js"
+  },
+  "dependencies": {
+    "whatsapp-web.js": "^1.26.0",
+    "googleapis": "^144.0.0",
+    "csv-parse": "^5.6.0",
+    "winston": "^3.17.0",
+    "node-cron": "^3.0.3",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "allowScripts": {
+    "puppeteer@24.38.0": true
+  }
+}

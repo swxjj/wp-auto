@@ -1,0 +1,4 @@
+nombre_tienda,nombre_contacto,telefono,email,tipo,productos
+Tienda Ejemplo WP,Juan Pérez,+5491100000001,,whatsapp,"Producto A, Producto B"
+Empresa Ejemplo Mail,María García,,contacto@empresa.com,email,"Producto C"
+Tienda Ejemplo Ambos,Pedro López,+5491100000002,pedro@tienda.com,ambos,"Producto D, Producto E"

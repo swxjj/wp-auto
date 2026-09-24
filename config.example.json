@@ -1,0 +1,28 @@
+{
+  "whatsapp_template": "Hola buenos días, soy del {mi_empresa}. Estoy realizando el relevamiento de precios semanal. Quería consultarte el valor de:\n\n{productos}\n\nDesde ya muchas gracias.",
+  "email_subject_template": "Solicitud de precios - {mi_empresa}",
+  "email_template": "Hola buenos días, soy del {mi_empresa}. Estoy realizando el relevamiento de precios semanal. Quería consultarte el valor de:\n\n{productos}\n\nDesde ya muchas gracias.",
+  "followup_whatsapp_template": "Hola buenos días, soy del {mi_empresa}. Te escribo nuevamente para consultar el valor de:\n\n{productos}\n\nDesde ya muchas gracias.",
+  "followup_email_template": "Hola buenos días, soy del {mi_empresa}. Te escribo nuevamente para consultar el valor de:\n\n{productos}\n\nDesde ya muchas gracias.",
+
+  "mi_empresa": "NOMBRE_DE_TU_EMPRESA",
+  "mi_nombre": "TU_NOMBRE",
+
+  "sender_email": "tu_email@gmail.com",
+  "gmail_credentials_path": "credentials/gmail_credentials.json",
+  "gmail_token_path": "credentials/gmail_token.json",
+
+  "contacts_csv": "contactos.csv",
+
+  "schedule": {
+    "send_day": 2,
+    "check_day": 3,
+    "followup_day": 4,
+    "send_time": "09:00",
+    "check_time": "09:00",
+    "followup_time": "09:00",
+    "frequency_weeks": 2
+  },
+
+  "whatsapp_delay_between_messages_ms": 5000
+}

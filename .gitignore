@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Archivos con datos reales — nunca commitear
+config.json
+contactos.csv
+
+# Credenciales Gmail
+credentials/
+
+# Sesión de WhatsApp (generada automáticamente)
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Estado de ciclos y logs
+tracking/
+logs/
+
+# Node
+node_modules/
+npm-debug.log*
