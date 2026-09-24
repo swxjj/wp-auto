@@ -33,16 +33,32 @@ export async function loadContacts(csvPath) {
         })
       )
       .on("data", (row) => {
+        // Skip ghost empty rows (e.g. ,,,,,)
+        const email = row.email || row.mail || null;
+        const telefono = row.telefono || null;
+        const nombre_tienda = (row.nombre_tienda || "").trim();
+
+        if (!nombre_tienda && !telefono && !email) {
+          return;
+        }
+
+        let tipo = (row.tipo || "whatsapp").toLowerCase().trim();
+        if (tipo === "mail") tipo = "email";
+
+        // Strip leading/trailing literal quotes from products
+        const rawProducts = (row.productos || "").replace(/^"+|"+$/g, "");
+        const productos = rawProducts
+          .split(",")
+          .map((p) => p.trim().replace(/^"+|"+$/g, ""))
+          .filter(Boolean);
+
         contacts.push({
-          nombre_tienda: row.nombre_tienda || "",
-          nombre_contacto: row.nombre_contacto || "",
-          telefono: row.telefono || null,
-          email: row.email || null,
-          tipo: (row.tipo || "whatsapp").toLowerCase(),
-          productos: (row.productos || "")
-            .split(",")
-            .map((p) => p.trim())
-            .filter(Boolean),
+          nombre_tienda,
+          nombre_contacto: (row.nombre_contacto || "").trim(),
+          telefono: telefono ? telefono.trim() : null,
+          email: email ? email.trim() : null,
+          tipo,
+          productos,
         });
       })
       .on("end", () => resolve(contacts))
