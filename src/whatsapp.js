@@ -215,6 +215,15 @@ export async function sendBulk(client, contacts, config, isFollowup = false) {
     }
   }
 
+  // Grace buffer after the last message to ensure WhatsApp Web flushes
+  // WebSocket frames and confirms server delivery before the browser is closed
+  if (contacts.length > 0) {
+    logger.info(
+      "⏳ Esperando 5s de confirmación para asegurar la entrega del último mensaje a WhatsApp..."
+    );
+    await new Promise((r) => setTimeout(r, 5000));
+  }
+
   return results;
 }
 
