@@ -17,6 +17,22 @@ Sistema de automatización biweekly para enviar solicitudes de precios a tiendas
 | **Miércoles** | Verifica respuestas (Gmail + WhatsApp), genera reporte |
 | **Jueves** | Reenvía solo a quienes no respondieron |
 
+## ⚠️ Archivos requeridos en la otra PC (No incluidos en el repositorio)
+
+Por motivos de seguridad, los archivos con credenciales, contactos y sesiones activas están ignorados en `.gitignore`. Al clonar el repositorio en una nueva máquina (ej. PC del trabajo), deberás configurar estos **3 archivos clave**:
+
+| Archivo | Qué hacer | Origen / Referencia |
+|---|---|---|
+| **`config.json`** | Copiar desde la plantilla y completar con tus datos | `cp config.example.json config.json` |
+| **`contactos.csv`** | Copiar desde la plantilla y cargar los contactos reales | `cp contactos.example.csv contactos.csv` |
+| **`credentials/gmail_credentials.json`** | Crear la carpeta `credentials/` y pegar el archivo JSON de OAuth | Descargado de Google Cloud Console |
+
+> 💡 **Tip para ahorrar tiempo en Gmail**: Si no querés volver a pasar por la pantalla de autorización de Google en la otra PC, podés copiar directamente el archivo `credentials/gmail_token.json` de esta PC a la otra.
+>
+> 💡 **WhatsApp Web**: La carpeta `.wwebjs_auth/` **no** se copia. Se generará automáticamente la primera vez que ejecutes el script al escanear el código QR con el celular de trabajo.
+
+---
+
 ## Setup
 
 ### 1. Requisitos

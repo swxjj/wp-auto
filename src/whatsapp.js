@@ -15,6 +15,41 @@ import qrcode from "qrcode-terminal";
 import { renderWhatsAppMessage } from "./templates.js";
 import { logger } from "./logger.js";
 
+import fs from "fs";
+
+/**
+ * Detect Google Chrome path based on the operating system.
+ */
+function getDefaultChromePath() {
+  if (process.platform === "darwin") {
+    const macPath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+    return fs.existsSync(macPath) ? macPath : undefined;
+  }
+  if (process.platform === "win32") {
+    const winPaths = [
+      `${process.env["PROGRAMFILES"] || "C:\\Program Files"}\\Google\\Chrome\\Application\\chrome.exe`,
+      `${process.env["PROGRAMFILES(X86)"] || "C:\\Program Files (x86)"}\\Google\\Chrome\\Application\\chrome.exe`,
+      `${process.env["LOCALAPPDATA"] || ""}\\Google\\Chrome\\Application\\chrome.exe`,
+    ];
+    for (const p of winPaths) {
+      if (fs.existsSync(p)) return p;
+    }
+    return undefined;
+  }
+  if (process.platform === "linux") {
+    const linuxPaths = [
+      "/usr/bin/google-chrome",
+      "/usr/bin/google-chrome-stable",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium",
+    ];
+    for (const p of linuxPaths) {
+      if (fs.existsSync(p)) return p;
+    }
+  }
+  return undefined;
+}
+
 /**
  * Creates and initializes a WhatsApp client.
  * The client stays connected until you call destroy().
@@ -22,18 +57,24 @@ import { logger } from "./logger.js";
  * @returns {Promise<Client>} Authenticated WhatsApp client
  */
 export async function createClient() {
+  const chromePath = getDefaultChromePath();
+  const puppeteerConfig = {
+    headless: false,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--profile-directory=WPAuto",
+    ],
+  };
+
+  if (chromePath) {
+    puppeteerConfig.executablePath = chromePath;
+  }
+
   const client = new Client({
     authStrategy: new LocalAuth({ dataPath: ".wwebjs_auth" }),
-    puppeteer: {
-      headless: false,
-      executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--profile-directory=WPAuto",
-      ],
-    },
+    puppeteer: puppeteerConfig,
   });
 
   return new Promise((resolve, reject) => {
