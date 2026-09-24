@@ -24,5 +24,6 @@
     "frequency_weeks": 2
   },
 
-  "whatsapp_delay_between_messages_ms": 5000
+  "whatsapp_delay_min_ms": 8000,
+  "whatsapp_delay_max_ms": 18000
 }

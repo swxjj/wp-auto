@@ -121,15 +121,40 @@ function formatChatId(phone) {
 }
 
 /**
+ * Calculate a randomized human-like delay with jitter.
+ * Default range: 8,000ms - 18,000ms (8 to 18 seconds).
+ *
+ * @param {object} [config]
+ * @returns {number} Delay in milliseconds
+ */
+export function getHumanDelay(config = {}) {
+  const minMs = config.whatsapp_delay_min_ms ?? 8000;
+  const maxMs = config.whatsapp_delay_max_ms ?? 18000;
+
+  if (
+    config.whatsapp_delay_between_messages_ms &&
+    !config.whatsapp_delay_min_ms &&
+    !config.whatsapp_delay_max_ms
+  ) {
+    const base = config.whatsapp_delay_between_messages_ms;
+    const min = Math.max(1000, Math.floor(base * 0.75));
+    const max = Math.floor(base * 1.25);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+}
+
+/**
  * Send a WhatsApp message to a single contact.
  *
  * @param {Client} client - Authenticated WhatsApp client
  * @param {import('./contacts.js').Contact} contact
  * @param {string} message
- * @param {number} delayMs - Delay after sending (anti-spam)
+ * @param {number|null} delayMs - Delay after sending (anti-spam), null for randomized delay
  * @returns {Promise<boolean>} True if sent successfully
  */
-export async function sendMessage(client, contact, message, delayMs = 5000) {
+export async function sendMessage(client, contact, message, delayMs = null) {
   const chatId = formatChatId(contact.telefono);
 
   try {
@@ -147,9 +172,10 @@ export async function sendMessage(client, contact, message, delayMs = 5000) {
       `✅ Mensaje enviado a ${contact.nombre_tienda} (${contact.telefono})`
     );
 
-    // Anti-spam delay
-    if (delayMs > 0) {
-      await new Promise((r) => setTimeout(r, delayMs));
+    // Anti-spam delay if requested
+    const waitTime = delayMs !== null ? delayMs : getHumanDelay();
+    if (waitTime > 0) {
+      await new Promise((r) => setTimeout(r, waitTime));
     }
 
     return true;
@@ -162,7 +188,7 @@ export async function sendMessage(client, contact, message, delayMs = 5000) {
 }
 
 /**
- * Send WhatsApp messages to multiple contacts.
+ * Send WhatsApp messages to multiple contacts with randomized anti-spam jitter.
  *
  * @param {Client} client
  * @param {import('./contacts.js').Contact[]} contacts
@@ -172,12 +198,21 @@ export async function sendMessage(client, contact, message, delayMs = 5000) {
  */
 export async function sendBulk(client, contacts, config, isFollowup = false) {
   const results = new Map();
-  const delayMs = config.whatsapp_delay_between_messages_ms || 5000;
 
-  for (const contact of contacts) {
+  for (let i = 0; i < contacts.length; i++) {
+    const contact = contacts[i];
     const message = renderWhatsAppMessage(contact, config, isFollowup);
-    const success = await sendMessage(client, contact, message, delayMs);
+    const success = await sendMessage(client, contact, message, 0);
     results.set(contact.telefono, success);
+
+    // Wait with randomized human-like jitter between messages (except after the last one)
+    if (i < contacts.length - 1) {
+      const delayMs = getHumanDelay(config);
+      logger.info(
+        `⏳ Pausa humana anti-spam: esperando ${(delayMs / 1000).toFixed(1)}s antes del próximo mensaje... (${i + 1}/${contacts.length})`
+      );
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
   }
 
   return results;
